@@ -1,0 +1,32 @@
+---
+- name: run_iptables_save
+  ping: {}
+  notify: run_iptables4_save 
+  notify: run_iptables6_save 
+    
+- name: run_iptables4_save
+  shell : "/usr/sbin/iptables-save > /etc/iptables/rules.v4"
+  become: yes
+  become_user: root 
+
+- name: run_iptables6_save
+  shell : "/usr/sbin/ip6tables-save > /etc/iptables/rules.v6"
+  become: yes
+  become_user: root 
+
+- name: run_iptables6_save
+  shell : "/usr/sbin/ip6tables-save > /etc/iptables/rules.v6"
+  become: yes
+  become_user: root 
+
+- name: restart_sshserver
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: sshd
+
+- name: restart_fail2ban
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: fail2ban

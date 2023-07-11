@@ -1,0 +1,4 @@
+## Here default variables for common role
+remote_user: 'admin'
+remote_user_public_key: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"
+snapshot_public_key: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"

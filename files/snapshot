@@ -1,0 +1,1 @@
+snapshot    ALL=NOPASSWD:/usr/bin/rsync

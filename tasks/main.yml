@@ -1,0 +1,157 @@
+---
+- name: Install common packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop: "{{ common_packages }}"
+
+- name: Ensure group ssh exists
+  ansible.builtin.group:
+    name: ssh
+    state: present
+    system: true
+
+- name: adding admin user to group ssh
+  user:
+    name: "{{ remote_user }}"
+    groups: ssh
+    append: yes
+
+- name: Copy fail2ban conf
+  copy:
+    src: jail.local
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart_fail2ban
+
+- name: Set authorized key for user admin copying it from current user
+  ansible.posix.authorized_key:
+    user: admin
+    state: present
+    key: "{{ remote_user_public_key }}"
+
+- name: Copy SSH server conf
+  copy:
+    src: custom_config.conf
+    dest: /etc/ssh/sshd_config.d/custom_config.conf
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+  notify: restart_sshserver
+
+- name: Allow connections on 22 ports
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "22"
+    jump: ACCEPT
+  notify: run_iptables_save
+
+- name: Allow established and related traffic in input
+  ansible.builtin.iptables:
+    chain: INPUT
+    ctstate:
+      - ESTABLISHED
+      - RELATED
+    jump: ACCEPT
+  notify: run_iptables_save
+
+- name: Allow established and related traffic in forward
+  ansible.builtin.iptables:
+    chain: FORWARD
+    ctstate:
+      - ESTABLISHED
+      - RELATED
+    jump: ACCEPT
+  notify: run_iptables_save
+
+- name: policy input ipv4
+  ansible.builtin.iptables:
+    chain: INPUT
+    policy: DROP
+  notify: run_iptables_save
+
+- name: policy forward ipv4
+  ansible.builtin.iptables:
+    chain: FORWARD
+    policy: DROP
+  notify: run_iptables_save
+
+- name: policy output ipv4
+  ansible.builtin.iptables:
+    chain: OUTPUT
+    policy: ACCEPT
+  notify: run_iptables_save
+
+- name: policy input ipv6
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    chain: INPUT
+    policy: DROP
+  notify: run_iptables_save
+
+- name: policy forward ipv6
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    chain: FORWARD
+    policy: DROP
+  notify: run_iptables_save
+
+- name: policy output ipv6
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    chain: OUTPUT
+    policy: DROP
+  notify: run_iptables_save
+
+- name: accept input to lo
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: lo
+    jump: ACCEPT
+  notify: run_iptables_save
+
+- name: reject input to lo that does not arrive from local
+  ansible.builtin.iptables:
+    chain: INPUT
+    in_interface: ! lo
+    jump: REJECT
+    destination: 127.0.0.0/8
+  notify: run_iptables_save
+
+- name: Ensure group ssh exists
+  ansible.builtin.group:
+    name: ssh
+    state: present
+    system: true
+
+- name: Ensure group snapshot exists
+  ansible.builtin.group:
+    name: snapshot
+    state: present
+    system: true
+
+- name: Add the user snapshot
+  ansible.builtin.user:
+    name: snapshot
+    group: snapshot
+    shell: /bin/bash
+    groups: ssh
+    system: true
+
+- name: Set authorized key for user snapshot copying it from current user
+  ansible.posix.authorized_key:
+    user: snapshot
+    state: present
+    key: "{{ snapshot_public_key }}"
+
+- name: Copy sudo snapshot config file
+  copy:
+    src: snapshot
+    dest: /etc/sudoers.d/snapshot
+    owner: root
+    group: root
+    mode: 640

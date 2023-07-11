@@ -1,0 +1,10 @@
+## Here variables for common role
+common_packages:
+  - rsync
+  - tmux
+  - vim
+  - net-tools
+  - iptables-persistent
+  - fail2ban
+  - sudo
+  - openvpn
