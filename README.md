@@ -1,6 +1,6 @@
 # common-role
 
-# Introduction
+## Introduction
 
 This work shall be included into an [ansible playbook]() as [ansible role]().
 This [role]() is intented as a container for all tools and configuration needed as base on 
@@ -59,25 +59,27 @@ The fail2ban configuration are left as default.
 ## Users
 ### Special users
 #### Admin user
-Ansible as orchestrator need an admin user, we assume it is the user you created when you installed the system, it is added to the ssh group.
+Ansible as orchestrator need an admin user, we assume it is the user you created when you installed the system, and the one you are using to run ansible, it will be added to the ssh group.
 
-This user can be controlled using those parameters:
+This user public key can be controlled using this parameter:
 ```
-remote_user: 'admin'
-remote_user_public_key: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"
-snapshot_public_key: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"
+ansible_ssh_public_key_file: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"
 ```
 
 #### `snapshot` user 
-This role create system user `snapshot`; this user is part of the ssh group, the a custo sudo
-rule is installed, this user can run rsync as root.
+This role create system user `snapshot`; this user is part of the ssh group, and a custom sudo
+rule is installed, this user can run rsync server as root.
 
-This can be used to run system backups using [rsnapshot]().
+```
+snapshot_ssh_public_key_file: "{{ lookup('file', '{{ playbook_dir }}/.ssh/admin_rsa.pub') }}"
+```
+
+
+This can be used to run system backups using [rsnapshot](https://rsnapshot.org/).
 
 ### Other users
 
 It is possible to add users to the system adding users to the `other_users` variable; 
 all for all username in this list it will be created a user belongin to users and ssh groups.
 
-# References
 
