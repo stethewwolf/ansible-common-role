@@ -14,7 +14,7 @@
 
 - name: adding admin user to group ssh
   user:
-    name: "{{ remote_user }}"
+    name: "{{ ansible_user }}"
     groups: ssh
     append: yes
 
@@ -29,9 +29,9 @@
 
 - name: Set authorized key for user admin copying it from current user
   ansible.posix.authorized_key:
-    user: admin
+    user: "{{ ansible_user }}"
     state: present
-    key: "{{ remote_user_public_key }}"
+    key: "{{ ansible_ssh_public_key_file }}"
 
 - name: Copy SSH server conf
   copy:
