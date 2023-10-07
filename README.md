@@ -1,5 +1,7 @@
 # common-role
 
+Ansible role for common stuff.
+
 ## Introduction
 
 This work shall be included into an [ansible playbook]() as [ansible role]().
@@ -11,8 +13,6 @@ Topic covered:
 * users
 * basic firewall policies
 * ssh server enforcement
-
-# Common stuff
 
 ## Basic tools
 This role install the following packages:
