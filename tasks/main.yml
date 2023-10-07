@@ -155,3 +155,14 @@
     owner: root
     group: root
     mode: 640
+
+- name: Add other users
+  user:
+    name: "{{ item }}"
+    group: users
+    shell: /bin/bash
+    system: false
+  loop: "{{ other_users }}"
+  when: other_users is defined
+
+
