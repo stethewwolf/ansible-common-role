@@ -7,7 +7,7 @@
   loop: "{{ common_packages }}"
 
 - name: Ensure group ssh exists
-  ansible.builtin.group:
+  group:
     name: ssh
     state: present
     system: true
@@ -43,7 +43,7 @@
   notify: restart_sshserver
 
 - name: Allow connections on 22 ports
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     protocol: tcp
     destination_port: "22"
@@ -51,7 +51,7 @@
   notify: run_iptables_save
 
 - name: Allow established and related traffic in input
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     ctstate:
       - ESTABLISHED
@@ -60,7 +60,7 @@
   notify: run_iptables_save
 
 - name: Allow established and related traffic in forward
-  ansible.builtin.iptables:
+  iptables:
     chain: FORWARD
     ctstate:
       - ESTABLISHED
@@ -69,53 +69,53 @@
   notify: run_iptables_save
 
 - name: policy input ipv4
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     policy: DROP
   notify: run_iptables_save
 
 - name: policy forward ipv4
-  ansible.builtin.iptables:
+  iptables:
     chain: FORWARD
     policy: DROP
   notify: run_iptables_save
 
 - name: policy output ipv4
-  ansible.builtin.iptables:
+  iptables:
     chain: OUTPUT
     policy: ACCEPT
   notify: run_iptables_save
 
 - name: policy input ipv6
-  ansible.builtin.iptables:
+  iptables:
     ip_version: ipv6
     chain: INPUT
     policy: DROP
   notify: run_iptables_save
 
 - name: policy forward ipv6
-  ansible.builtin.iptables:
+  iptables:
     ip_version: ipv6
     chain: FORWARD
     policy: DROP
   notify: run_iptables_save
 
 - name: policy output ipv6
-  ansible.builtin.iptables:
+  iptables:
     ip_version: ipv6
     chain: OUTPUT
     policy: DROP
   notify: run_iptables_save
 
 - name: accept input to lo
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     in_interface: lo
     jump: ACCEPT
   notify: run_iptables_save
 
 - name: reject input to lo that does not arrive from local
-  ansible.builtin.iptables:
+  iptables:
     chain: INPUT
     in_interface: ! lo
     jump: REJECT
@@ -123,19 +123,19 @@
   notify: run_iptables_save
 
 - name: Ensure group ssh exists
-  ansible.builtin.group:
+  group:
     name: ssh
     state: present
     system: true
 
 - name: Ensure group snapshot exists
-  ansible.builtin.group:
+  group:
     name: snapshot
     state: present
     system: true
 
 - name: Add the user snapshot
-  ansible.builtin.user:
+  user:
     name: snapshot
     group: snapshot
     shell: /bin/bash
