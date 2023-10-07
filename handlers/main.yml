@@ -14,11 +14,6 @@
   become: yes
   become_user: root 
 
-- name: run_iptables6_save
-  shell : "/usr/sbin/ip6tables-save > /etc/iptables/rules.v6"
-  become: yes
-  become_user: root 
-
 - name: restart_sshserver
   systemd:
     state: restarted
