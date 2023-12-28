@@ -165,4 +165,12 @@
   loop: "{{ other_users }}"
   when: other_users is defined
 
+- name: Install common additional packages
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  loop: "{{ common_additional_packages }}"
+  when:  common_additional_packages is defined
+
 
