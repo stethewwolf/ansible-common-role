@@ -173,4 +173,9 @@
   loop: "{{ common_additional_packages }}"
   when:  common_additional_packages is defined
 
+- name: Run custom additional commands
+  shell: "{{ item }}"
+  loop: "{{ common_custom_commands }}"
+  when:  common_custom_commands is defined
+
 
