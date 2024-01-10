@@ -25,7 +25,7 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
-  notify: restart_fail2ban
+  notify: common_restart_fail2ban
 
 - name: Set authorized key for user admin copying it from current user
   ansible.posix.authorized_key:
@@ -40,7 +40,7 @@
     owner: root
     group: root
     mode: u=rw,g=r,o=r
-  notify: restart_sshserver
+  notify: common_restart_sshserver
 
 - name: Allow connections on 22 ports
   iptables:
@@ -48,7 +48,7 @@
     protocol: tcp
     destination_port: "22"
     jump: ACCEPT
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: Allow established and related traffic in input
   iptables:
@@ -57,7 +57,7 @@
       - ESTABLISHED
       - RELATED
     jump: ACCEPT
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: Allow established and related traffic in forward
   iptables:
@@ -66,53 +66,53 @@
       - ESTABLISHED
       - RELATED
     jump: ACCEPT
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy input ipv4
   iptables:
     chain: INPUT
     policy: DROP
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy forward ipv4
   iptables:
     chain: FORWARD
     policy: DROP
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy output ipv4
   iptables:
     chain: OUTPUT
     policy: ACCEPT
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy input ipv6
   iptables:
     ip_version: ipv6
     chain: INPUT
     policy: DROP
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy forward ipv6
   iptables:
     ip_version: ipv6
     chain: FORWARD
     policy: DROP
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: policy output ipv6
   iptables:
     ip_version: ipv6
     chain: OUTPUT
     policy: DROP
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: accept input to lo
   iptables:
     chain: INPUT
     in_interface: lo
     jump: ACCEPT
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: reject input to lo that does not arrive from local
   iptables:
@@ -120,7 +120,7 @@
     in_interface: ! lo
     jump: REJECT
     destination: 127.0.0.0/8
-  notify: run_iptables_save
+  notify: common_run_iptables_save
 
 - name: Ensure group ssh exists
   group:
