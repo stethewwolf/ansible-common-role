@@ -1,10 +1,12 @@
 ---
+
 - name: Install common packages
   apt:
     name: "{{ item }}"
     state: latest
     update_cache: yes
   loop: "{{ common_packages }}"
+
 
 - name: Ensure group ssh exists
   group:
@@ -42,13 +44,24 @@
     mode: u=rw,g=r,o=r
   notify: common_restart_sshserver
 
-- name: Allow connections on 22 ports
+- name: Allow connections on 22 port
   iptables:
     chain: INPUT
     protocol: tcp
     destination_port: "22"
     jump: ACCEPT
   notify: common_run_iptables_save
+  when: ssh_network is not defined
+
+- name: Allow connections on 22 port from allowed nets
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: "22"
+    source: "{{ ssh_network }}"
+    jump: ACCEPT
+  notify: common_run_iptables_save
+  when: ssh_network is defined
 
 - name: Allow established and related traffic in input
   iptables:
